@@ -34,12 +34,17 @@ def fnv1a_hash_kernel(
         BLOCK_SIZE: tl.constexpr
 ):
     pid = tl.program_id(0)
-
+    offsets = pid * BLOCK_SIZE + tl.arange(0, BLOCK_SIZE)
+    mask = offsets < n_elements
+    x = tl.load(input + offsets, mask=mask, other=0.0).to(tl.uint32)
+    for _ in range(n_rounds):
+        x = fnv1a_hash(x)
+    tl.store(output + offsets, x, mask=mask)
 
 
 # input, output are tensors on the GPU
 def solve(input: torch.Tensor, output: torch.Tensor, N: int, R: int):
-    BLOCK_SIZE = 1024
+    BLOCK_SIZE = 256
     grid = (triton.cdiv(N, BLOCK_SIZE),)
     fnv1a_hash_kernel[grid](
         input,
