@@ -51,7 +51,7 @@ def solve_1d(input: torch.Tensor, output: torch.Tensor, rows: int, cols: int):
 
 
 @triton.jit
-def matrix_transpose_kernel_triton(
+def matrix_transpose_kernel_triton_block(
         input, output,
         rows, cols,
         stride_ir, stride_ic,
@@ -74,7 +74,7 @@ def matrix_transpose_kernel_triton(
     tl.store(output_offsets, tl.trans(block), mask=output_mask)
 
 # input, output are tensors on the GPU
-def solve_triton(input: torch.Tensor, output: torch.Tensor, rows: int, cols: int):
+def solve_triton_block(input: torch.Tensor, output: torch.Tensor, rows: int, cols: int):
     stride_ir, stride_ic = cols, 1
     stride_or, stride_oc = rows, 1
 
@@ -121,7 +121,7 @@ def benchmark(size, provider):
         )
     if provider == 'triton_block':
         ms, min_ms, max_ms = triton.testing.do_bench(
-            lambda: solve_triton(input_matrix, output_matrix, size, size),
+            lambda: solve_triton_block(input_matrix, output_matrix, size, size),
             quantiles=quantiles
         )
     
