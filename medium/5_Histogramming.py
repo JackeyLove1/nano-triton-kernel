@@ -84,7 +84,7 @@ def run():
     histogram1 = torch.zeros(num_bins).cuda()
     histogram2 = torch.zeros(num_bins).cuda()
     solve1(input, histogram1, N, num_bins)
-    solve(input, histogram2, N, num_bins)
+    # solve(input, histogram2, N, num_bins)
     print(f"histogram: {histogram1}")
     print(f"histogram: {histogram2}")
 
