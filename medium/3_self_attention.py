@@ -30,7 +30,3 @@ def torch_solve(Q: torch.Tensor, K: torch.Tensor, V: torch.Tensor, output: torch
           M: int, N: int, d: int):
     torch.matmul(torch.nn.functional.softmax(torch.div(Q @ K.T, math.sqrt(d))), V, out=output)
 
-
-
-def solve(Q: torch.Tensor, K: torch.Tensor, V: torch.Tensor, output: torch.Tensor, M: int, N: int, d: int):
-    pass
