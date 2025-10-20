@@ -50,6 +50,7 @@ def subsum_kernel(
     input_ptr = input + off_m[:, None, None] * (N * K) + off_n[None, :, None] * K + off_k[None, None, :]
 
     x = tl.load(input_ptr, mask=mask, other=0).to(tl.int64) # avoid overflow
+    x = tl.where(mask, x, 0)
     block_sum = tl.sum(tl.sum(tl.sum(x, axis=2), axis=1), axis=0)
     tl.atomic_add(output, block_sum, sem='relaxed')
 
